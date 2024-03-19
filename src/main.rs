@@ -14,9 +14,9 @@ fn main() {
             Ok(mut stream) => {
                 println!("accepted new connection");
                 let mut data: &mut [u8] = &mut [0];
+                stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n").expect("could not send data");                stream.read(&mut data).expect("could not read incomming data");
                 stream.read(&mut data).expect("could not read incomming data");
-                stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n").expect("could not send data");
-                println!("{:?}", data);
+                println!("{}", String::from_utf8(data.to_vec()).unwrap());
             }
             Err(e) => {
                 println!("error: {}", e);

@@ -2,6 +2,7 @@
 use std::{fs::read_to_string, io::{Read, Write}, net::{TcpListener, TcpStream}};
 use std::error::Error;
 use std::thread;
+use std::env::args;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -56,6 +57,8 @@ fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
                 let data = gen_200_response(&to_echo, to_echo.len());
                 stream.write_all(data.as_bytes())?;
             } else if path.starts_with("/files") {
+                let dir: Vec<String> = args().collect();
+                println!("{:?}", dir);
                 let path = path.split('/').collect::<Vec<&str>>()[2..].join("/");
                 let to_send = read_to_string(path).unwrap_or("Not Found".into());
                 stream.write_all(gen_200_response_file(&to_send, to_send.len()).as_bytes())?;

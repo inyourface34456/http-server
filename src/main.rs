@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 match path {
                     "/" => stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n")?,
                     "/user-agent" => {
-                        let user_agent = &data[2];
+                        let user_agent = &data[2].split(": ").collect::<Vec<&str>>()[1];
                         stream.write_all(gen_200_response(&user_agent, user_agent.len()).as_bytes())?
                     },
                     _ => {

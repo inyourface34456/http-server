@@ -33,6 +33,10 @@ fn gen_200_response<T: std::fmt::Display>(data: T, len: usize) -> String {
     format!("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}", len, data)
 }
 
+fn gen_200_response_file<T: std::fmt::Display>(data: T, len: usize) -> String {
+    format!("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {}\r\n\r\n{}", len, data)
+}
+
 fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
     let mut data = [0; 2048];              
     stream.read(&mut data)?;
@@ -54,7 +58,7 @@ fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
             } else if path.starts_with("/files") {
                 let path = path.split('/').collect::<Vec<&str>>()[2..].join("/");
                 let to_send = read_to_string(path).unwrap_or("Not Found".into());
-                stream.write_all(gen_200_response(&to_send, to_send.len()).as_bytes())?;
+                stream.write_all(gen_200_response_file(&to_send, to_send.len()).as_bytes())?;
             } else {
                 stream.write_all(b"HTTP/1.1 404 NOT_FOUND\r\n\r\n")?
             }

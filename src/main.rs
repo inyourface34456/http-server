@@ -1,5 +1,5 @@
 // Uncomment this block to pass the first stage
-use std::{io::{Read, Write}, net::{TcpListener, TcpStream}};
+use std::{fs::read_to_string, io::{Read, Write}, net::{TcpListener, TcpStream}};
 use std::error::Error;
 use std::thread;
 
@@ -51,6 +51,10 @@ fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
                 let to_echo: String = path.split('/').collect::<Vec<&str>>()[2..].join("/");
                 let data = gen_200_response(&to_echo, to_echo.len());
                 stream.write_all(data.as_bytes())?;
+            } else if path.starts_with("/files") {
+                let path = path.split('/').collect::<Vec<&str>>()[2..].join("/");
+                let to_send = read_to_string(path).unwrap_or("Not Found".into());
+                stream.write_all(gen_200_response(&to_send, to_send.len()).as_bytes())?;
             } else {
                 stream.write_all(b"HTTP/1.1 404 NOT_FOUND\r\n\r\n")?
             }

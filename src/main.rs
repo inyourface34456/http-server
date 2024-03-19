@@ -18,6 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 stream.read(&mut data)?;
                 let data = String::from_utf8(data.to_vec())?.split("\r\n").map(|x| x.to_string()).collect::<Vec<String>>();
                 let path = data[0].split(' ').collect::<Vec<&str>>()[1];
+                println!("{}", path);
                 if path != "/" {
                     stream.write_all(b"HTTP/1.1 404 NOT_FOUND\r\n\r\n")?;
                 } else {

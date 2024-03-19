@@ -14,7 +14,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                thread::spawn(move || respond(stream).expect("failed"));
+                thread::spawn(move || {
+                    let res = respond(&mut stream);
+                    match res {
+                        Ok(_) => {},
+                        Err(err) => println!("{}", err.to_string())
+                    }
+                });
             }
             Err(e) => {
                 println!("error: {}", e);
@@ -28,7 +34,7 @@ fn gen_200_response<T: std::fmt::Display>(data: T, len: usize) -> String {
     format!("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}", len, data)
 }
 
-fn respond(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
+fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
     let mut data = vec![];              
     stream.read_to_end(&mut data)?;
     let data = String::from_utf8(data.to_vec())?.split("\r\n").map(|x| x.to_string()).collect::<Vec<String>>();

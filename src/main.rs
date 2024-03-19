@@ -19,10 +19,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let data = String::from_utf8(data.to_vec())?.split("\r\n").map(|x| x.to_string()).collect::<Vec<String>>();
                 let path = data[0].split(' ').collect::<Vec<&str>>()[1];
                 println!("{}", path);
-                if path != "/" {
-                    stream.write_all(b"HTTP/1.1 404 NOT_FOUND\r\n\r\n")?;
-                } else {
-                    stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n")?;
+
+                match path {
+                    "/" => stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n")?,
+                    _ => {
+                        if path.starts_with("/echo") {
+                            let to_echo: String = path.split('/').collect::<Vec<&str>>()[1].to_string();
+                            let data = format!("HTTP/1.1 200 OK\r\n\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n{}", to_echo.len(), to_echo);
+                            stream.write_all(data.as_bytes())?;
+                        } else {
+                            stream.write_all(b"HTTP/1.1 404 NOT_FOUND\r\n\r\n")?
+                        }
+                    }
+                    
                 }
             }
             Err(e) => {

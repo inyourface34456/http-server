@@ -8,7 +8,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Logs from your program will appear here!");
 
     // Uncomment this block to pass the first stage
-    //
     let listener = TcpListener::bind("127.0.0.1:4221")?;
     
     for stream in listener.incoming() {
@@ -35,8 +34,8 @@ fn gen_200_response<T: std::fmt::Display>(data: T, len: usize) -> String {
 }
 
 fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
-    let mut data = vec![];              
-    stream.read_to_end(&mut data)?;
+    let mut data = [0; 2048];              
+    stream.read(&mut data)?;
     let data = String::from_utf8(data.to_vec())?.split("\r\n").map(|x| x.to_string()).collect::<Vec<String>>();
     let path = data[0].split(' ').collect::<Vec<&str>>()[1];
     println!("{}", path);

@@ -67,7 +67,7 @@ fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
                 let dir = args().collect::<Vec<String>>()[2].to_string();
                 let path = path.split('/').collect::<Vec<&str>>()[2..].join("/");
                 let path = format!("{}{}", dir, path);
-
+//
                 if req_type == "GET" {
                     if let Ok(to_send) = read_to_string(path) {
                         stream.write_all(gen_200_response_file(&to_send, to_send.len()).as_bytes())?

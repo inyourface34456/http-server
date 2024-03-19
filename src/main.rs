@@ -77,7 +77,7 @@ fn respond(stream: &mut TcpStream) -> Result<(), Box<dyn Error>> {
                 } else if req_type == "POST" {
                     let to_write = &data[data.len()-1];
                     File::create(path)?.write_all(to_write.as_bytes())?;
-                    stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n")?
+                    stream.write_all(b"HTTP/1.1 201 OK\r\n\r\n")?
                 }
             } else {
                 stream.write_all(b"HTTP/1.1 404 NOT_FOUND\r\n\r\n")?
